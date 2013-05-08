@@ -7,36 +7,31 @@ module.exports = (grunt) ->
 	downloadFile = (artifact, path, temp_path) ->
 		deferred = Q.defer()
 
-		http.get artifact.buildUrl(), (res) ->
-
-			if res.statusCode isnt 200
-				deferred.reject("Couldn't open #{artifact.buildUrl()}")
+		grunt.util.spawn(
+			cmd: 'curl'
+			args: "-o #{temp_path} #{artifact.buildUrl()}".split(' ')
+		, (err, stdout, stderr) ->
+			if err
+				deferred.reject err
 				return
 
-			file = fs.createWriteStream temp_path
+			grunt.util.spawn(
+				cmd: 'tar'
+				args: "zxf #{temp_path} -C #{path}".split(' ')
+			,
+				(err, stdout, stderr) ->
 
-			res.on 'data', (chunk) ->
-				file.write chunk
+					grunt.file.delete temp_path
 
-			res.on 'end', ->
-				file.end()
+					if err
+						deferred.reject err
+						return
 
-				grunt.util.spawn(
-					cmd: 'tar'
-					args: "zxf #{temp_path} -C #{path}".split(' ')
-				,
-					(err, stdout, stderr) ->
+					grunt.file.write "#{path}/.version", artifact.version
 
-						grunt.file.delete temp_path
-
-						if err
-							deferred.reject err
-							return
-
-						grunt.file.write "#{path}/.version", artifact.version
-
-						deferred.resolve()
-				)
+					deferred.resolve()
+			)
+		)
 
 		deferred.promise
 
