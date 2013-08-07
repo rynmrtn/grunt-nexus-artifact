@@ -12,6 +12,9 @@ module.exports = (grunt) -> class NexusArtifact
 	constructor: (config) ->
 		{@url, @base_path, @repository, @group_id, @name, @version, @ext, @versionPattern} = config
 
+	toString: () ->
+		return [@group_id, @name, @ext, @version].join(':')
+
 	buildUrl: () ->
 		_.compact(_.flatten([
 			@url
