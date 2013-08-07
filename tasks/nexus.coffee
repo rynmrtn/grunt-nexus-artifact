@@ -12,16 +12,15 @@ module.exports = (grunt) ->
 		done = @async()
 
 		# defaults
-		options = _.extend
+		options = this.options
 			url: ''
 			base_path: 'nexus/content/repositories'
 			repository: ''
 			versionPattern: '%v/%a-%v.%e'
-		, @options()
 
 		processes = []
 
-		if !@args.length or @args.indexOf('fetch') > -1
+		if !@args.length or _.contains @args, 'fetch'
 			_.each options.fetch, (cfg) ->
 				# get the base nexus path
 				_.extend cfg, NexusArtifact.fromString(cfg.id) if cfg.id
