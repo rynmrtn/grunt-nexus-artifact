@@ -82,7 +82,6 @@ module.exports = (grunt) ->
 				upload hashes.md5, "#{url}.md5", false
 			]
 
-			grunt.
 			Q.all(promises).then () ->
 				deferred.resolve()
 			.fail (error) ->
