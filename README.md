@@ -1,6 +1,7 @@
 # grunt-nexus-artifact
 
 > Download artifacts from a Nexus artifact repository.
+> Publish artifacts to a Nexus artifact repository.
 > Only works with Mac and Linux
 
 ## Why?
@@ -19,7 +20,7 @@ or add the following to your package.json file:
 ```js
 {
   "devDependencies": {
-    "grunt-nexus-artifact": "0.1.1"
+    "grunt-nexus-artifact": "0.2.0"
   }
 }
 ```
@@ -30,8 +31,8 @@ Once the plugin has been installed, enabled it inside your Gruntfile with this l
 grunt.loadNpmTasks('grunt-nexus-artifact');
 ```
 
-## Nexus Task
-_Run this task with the `grunt nexus` command._
+## Nexus Fetch Task
+_Run this task with the `grunt nexus:target:fetch` command._
 
 ### Examples
 ```js
@@ -126,6 +127,48 @@ com.google.js:jquery:tgz:1.8.0
 Type: `String`
 
 This defines the path where the artifact will be extracted to. Ex: `public/lib/jquery`
+
+## Nexus publish task
+The publish flag will run the publish config to push artifacts up to nexus. It uses [grunt-contrib-compress](https://github.com/gruntjs/grunt-contrib-compress) so the file configuration will be the same.
+_Run this task with the `grunt nexus:target:publish` command._
+
+### Examples
+```js
+nexus: {
+  options: {
+    url: 'http://nexus.google.com:8080',
+    repository: 'jslibraries'
+  },
+  client: {
+    publish: [
+      { id: 'com.mycompany.js:built-artifact:tgz', version: 'my-version', path: 'dist/', files: [
+          { src: ['builds/**/*'] }
+        ]
+      }
+    ]
+  }
+}
+```
+
+In this example the `id` config is used, but the version is dropped. It can be specified in the `id` config or specified in the `version` config. This makes it easier to set the version dynamically.
+
+### Options
+
+The options listed here are new or repurposed for publish
+
+#### path
+Type `String`
+
+This defines the temporary path for the compressed artifact.
+
+#### files
+Type `Array`
+
+This parameter comes from `grunt-contrib-compress`. You can read about it at [github.com/gruntjs/grunt-contrib-compress](https://github.com/gruntjs/grunt-contrib-compress).
+There are some differences from the config on `grunt-contrib-compress`. First of all, `ext` is used from the artifact, so it doesn't need to be specified. `mode` is currently not supported. It will auto-configure based on the extension.
+
+# Release History
+* 2013-08-08  v0.2.0  Added support for publishing artifacts
 
 ----
 
