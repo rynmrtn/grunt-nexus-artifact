@@ -140,12 +140,14 @@ nexus: {
     repository: 'jslibraries'
   },
   client: {
-    publish: [
-      { id: 'com.mycompany.js:built-artifact:tgz', version: 'my-version', path: 'dist/', files: [
-          { src: ['builds/**/*'] }
-        ]
-      }
+    files: [
+      { src: ['builds/**/*'] }
     ]
+    options: {
+      publish: [
+        { id: 'com.mycompany.js:built-artifact:tgz', version: 'my-version', path: 'dist/' }
+      ]
+    }
   }
 }
 ```

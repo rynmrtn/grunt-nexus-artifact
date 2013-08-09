@@ -39,16 +39,9 @@ module.exports = (grunt) ->
 				_.extend artifactCfg, options
 
 				artifact = new NexusArtifact artifactCfg
-				processes.push util.publish(artifact, expandFiles(cfg.files), cfg.path)
+				processes.push util.publish(artifact, @files, cfg.path)
 
 		Q.all(processes).then(() ->
 			done()
 		).fail (err) ->
 			grunt.fail.warn err
-
-	# This method returns a files object out of a files config similar to @files object returned by grunt
-	expandFiles = (files) ->
-		_.map files, (file) ->
-			file.orig = file
-			file.src = grunt.file.expand file, file.src
-			return file
