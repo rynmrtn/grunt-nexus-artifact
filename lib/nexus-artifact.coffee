@@ -13,17 +13,20 @@ module.exports = (grunt) -> class NexusArtifact
 		{@url, @base_path, @repository, @group_id, @name, @version, @ext, @versionPattern} = config
 
 	toString: () ->
-		return [@group_id, @name, @ext, @version].join(':')
+		[@group_id, @name, @ext, @version].join(':')
 
-	buildUrl: () ->
+	buildUrlPath: () ->
 		_.compact(_.flatten([
 			@url
 			@base_path
 			@repository
 			@group_id.split('.')
 			@name
-			@buildArtifactUri()
+			"#{@version}/"
 		])).join('/')
+
+	buildUrl: () ->
+		"#{@buildUrlPath()}#{@buildArtifactUri()}"
 
 	buildArtifactUri: () ->
 		@versionPattern.replace /%([ave])/g, ($0, $1) =>
