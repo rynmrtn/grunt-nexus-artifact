@@ -17,6 +17,8 @@ module.exports = (grunt) ->
 			base_path: 'nexus/content/repositories'
 			repository: ''
 			versionPattern: '%a-%v.%e'
+			username: ''
+			password: ''
 
 		processes = []
 
@@ -39,7 +41,7 @@ module.exports = (grunt) ->
 				_.extend artifactCfg, options
 
 				artifact = new NexusArtifact artifactCfg
-				processes.push util.publish(artifact, @files, cfg.path)
+				processes.push util.publish(artifact, @files, { path: cfg.path, credentials: { username: options.username, password: options.password }} )
 
 		Q.all(processes).then(() ->
 			done()
