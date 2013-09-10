@@ -46,10 +46,13 @@ module.exports = (grunt) ->
 
 		deferred.promise
 
-	upload = (data, url, isFile = true) ->
+	upload = (data, url, credentials, isFile = true) ->
 		deferred = Q.defer()
 
 		options = grunt.util._.extend urlUtil.parse(url), {method: 'PUT'}
+		if credentials.username
+			options = grunt.util._.extend options, {auth: credentials.username + ":" + credentials.password}
+		
 		request = http.request options
 
 		if isFile
@@ -70,16 +73,16 @@ module.exports = (grunt) ->
 
 		deferred.promise
 
-	publishFile = (path, filename, urlPath) ->
+	publishFile = (options, filename, urlPath) ->
 		deferred = Q.defer()
 
-		generateHashes(path + filename).then (hashes) ->
+		generateHashes(options.path + filename).then (hashes) ->
 
 			url = urlPath + filename
 			promises = [
-				upload path + filename, url
-				upload hashes.sha1, "#{url}.sha1", false
-				upload hashes.md5, "#{url}.md5", false
+				upload options.path + filename, url, options.credentials
+				upload hashes.sha1, "#{url}.sha1", options.credentials, false
+				upload hashes.md5, "#{url}.md5", options.credentials, false
 			]
 
 			Q.all(promises).then () ->
@@ -149,17 +152,17 @@ module.exports = (grunt) ->
 		*
 		* @return {Promise} returns a Q promise to be resolved when the artifact is done being published
 		###
-		publish: (artifact, files, path) ->
+		publish: (artifact, files, options) ->
 			deferred = Q.defer()
 			filename = artifact.buildArtifactUri()
-			archive = "#{path}#{filename}"
+			archive = "#{options.path}#{filename}"
 
 			compress.options =
 				archive: archive
 				mode: compress.autoDetectMode(archive)
 
 			compress.tar files, () ->
-				publishFile(path, filename, artifact.buildUrlPath()).then( ->
+				publishFile(options, filename, artifact.buildUrlPath()).then( ->
 					deferred.resolve()
 				).fail (error) ->
 					deferred.reject error

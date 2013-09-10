@@ -144,9 +144,13 @@ nexus: {
       { src: ['builds/**/*'] }
     ]
     options: {
-      publish: [
-        { id: 'com.mycompany.js:built-artifact:tgz', version: 'my-version', path: 'dist/' }
-      ]
+      publish: [{
+          id: 'com.mycompany.js:built-artifact:tgz',
+          version: 'my-version', 
+          path: 'dist/',
+          username: 'admin',
+          password: 'admin123'
+      }]
     }
   }
 }
