@@ -87,6 +87,16 @@ Type: `String`
 
 This defines the name of the repository. _Since this task uses the REST API, the repository is not inferred_
 
+#### username
+Type: `String`
+
+This is an optional parameter that will be the nexus username - may not be needed for fetches
+
+#### password
+Type: `String`
+
+This is an optional parameter that will be the nexus password - may not be needed for fetches
+
 #### fetch
 Type: `Array{Object}`
 
