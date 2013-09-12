@@ -115,6 +115,7 @@ This defines the name of the artifact. Ex: `jquery`
 ##### ext
 Type: `String`
 
+Available extentions are `tgz`, `zip` and `jar`
 This defines the extension of the artifact. Ex: `tgz`
 
 ##### version
