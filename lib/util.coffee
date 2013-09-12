@@ -28,21 +28,29 @@ module.exports = (grunt) ->
 				deferred.reject err
 				return
 
-			grunt.util.spawn
-				cmd: 'tar'
-				args: "zxf #{temp_path} -C #{path}".split(' ')
-			,
-				(err, stdout, stderr) ->
+			spawnCmd = {}
 
-					grunt.file.delete temp_path
+			if artifact.ext is 'tgz'
+				spawnCmd =
+					cmd: 'tar'
+					args: "zxf #{temp_path} -C #{path}".split(' ')
+			else if artifact.ext in [ 'zip', 'jar' ]
+				spawnCmd =
+					cmd : 'unzip',
+					args: "#{temp_path} -d #{path}".split(' ')
+			else
+				msg = "Unknown artifact extension (#{artifact.ext}), could not extract it"
+				deferred.reject msg
 
-					if err
-						deferred.reject err
-						return
+			grunt.util.spawn spawnCmd, (err, stdout, stderr) ->
+				grunt.file.delete temp_path
 
-					grunt.file.write "#{path}/.version", artifact.version
+				if err
+					deferred.reject err
+					return
 
-					deferred.resolve()
+				grunt.file.write "#{path}/.version", artifact.version
+				deferred.resolve()
 
 		deferred.promise
 
@@ -52,7 +60,7 @@ module.exports = (grunt) ->
 		options = grunt.util._.extend urlUtil.parse(url), {method: 'PUT'}
 		if credentials.username
 			options = grunt.util._.extend options, {auth: credentials.username + ":" + credentials.password}
-		
+
 		request = http.request options
 
 		if isFile
