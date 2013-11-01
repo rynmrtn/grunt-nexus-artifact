@@ -20,7 +20,7 @@ or add the following to your package.json file:
 ```js
 {
   "devDependencies": {
-    "grunt-nexus-artifact": "0.2.0"
+    "grunt-nexus-artifact": "0.3.3"
   }
 }
 ```
@@ -155,6 +155,7 @@ nexus: {
       { src: ['builds/**/*'] }
     ]
     options: {
+      curl: false,
       publish: [{
           id: 'com.mycompany.js:built-artifact:tgz',
           version: 'my-version', 
@@ -183,6 +184,12 @@ Type `Array`
 
 This parameter comes from `grunt-contrib-compress`. You can read about it at [github.com/gruntjs/grunt-contrib-compress](https://github.com/gruntjs/grunt-contrib-compress).
 There are some differences from the config on `grunt-contrib-compress`. First of all, `ext` is used from the artifact, so it doesn't need to be specified. `mode` is currently not supported. It will auto-configure based on the extension.
+
+#### curl
+Type `Boolean`
+Default `false`
+
+This parameter gives the option to use curl to upload - some people have issues with uploading using Node streams (not sure why)
 
 # Release History
 * 2013-08-08  v0.2.0  Added support for publishing artifacts

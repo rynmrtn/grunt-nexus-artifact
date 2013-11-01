@@ -33,7 +33,7 @@ module.exports = (grunt) ->
 			if artifact.ext is 'tgz'
 				spawnCmd =
 					cmd: 'tar'
-					args: "zxf #{temp_path} -C #{path}".split(' ')
+					args: "zxf #{temp_path} -C #{path}".split ' '
 			else if artifact.ext in [ 'zip', 'jar' ]
 				spawnCmd =
 					cmd : 'unzip',
@@ -54,6 +54,21 @@ module.exports = (grunt) ->
 
 		deferred.promise
 
+	uploadCurl = (filename, url, credentials) ->
+		deferred = Q.defer()
+		authStr = if credentials.username then "-u #{credentials.username}:#{credentials.password}"  else ''
+
+		grunt.util.spawn
+			cmd: 'curl'
+			args: "-T #{filename} #{authStr} #{url}".split ' '
+		, (err, result, code) ->
+			grunt.log.writeln "Uploaded #{filename.cyan}"
+			deferred.reject err if err
+
+			deferred.resolve()
+
+		deferred.promise
+
 	upload = (data, url, credentials, isFile = true) ->
 		deferred = Q.defer()
 
@@ -68,13 +83,11 @@ module.exports = (grunt) ->
 			file.pipe(request)
 
 			file.on 'end', ->
+				grunt.log.writeln "Uploaded #{data.cyan}"
 				deferred.resolve()
 
-			file.on 'error', (error) ->
-				deferred.reject error
-
-			request.on 'error', (error) ->
-				deferred.reject error
+			file.on 'error', (error) -> deferred.reject error
+			request.on 'error', (error) -> deferred.reject error
 		else
 			request.end data
 			deferred.resolve()
@@ -87,8 +100,12 @@ module.exports = (grunt) ->
 		generateHashes(options.path + filename).then (hashes) ->
 
 			url = urlPath + filename
+
+			# allow upload through curl
+			uploadFn = if options.curl then uploadCurl else upload
+
 			promises = [
-				upload options.path + filename, url, options.credentials
+				uploadFn options.path + filename, url, options.credentials
 				upload hashes.sha1, "#{url}.sha1", options.credentials, false
 				upload hashes.md5, "#{url}.md5", options.credentials, false
 			]
