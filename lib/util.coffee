@@ -34,7 +34,7 @@ module.exports = (grunt) ->
 				spawnCmd =
 					cmd: 'tar'
 					args: "zxf #{temp_path} -C #{path}".split ' '
-			else if artifact.ext in [ 'zip', 'jar' ]
+			else if artifact.ext in [ 'zip', 'jar', 'war' ]
 				spawnCmd =
 					cmd : 'unzip',
 					args: "#{temp_path} -d #{path}".split(' ')
